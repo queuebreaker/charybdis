@@ -1,0 +1,15 @@
+{
+	"events": [
+	  {
+	    "type": "respong",
+	    "text": "(contents of the message that it responds to)"
+	  }
+	],
+	"triggers": [
+	  {
+	    "type": "message",
+	    "condition_text": " *",
+	    "condition": "regex"
+	  }
+	]
+}
