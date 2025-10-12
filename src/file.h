@@ -10,8 +10,5 @@
 #include "include.h"
 #include "opts.h"
 
-int
-ch_find(char* vault, char* entry);
-
 char*
 ch_read(FILE* vp, char* entry);
