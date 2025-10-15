@@ -5,7 +5,8 @@
 
 #include "random.h"
 
-char* random_string (int length, char* set)
+char*
+random_string(int length, char* set)
 {
 	char* string = NULL;
 	struct timeval tv;

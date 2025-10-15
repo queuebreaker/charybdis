@@ -21,8 +21,9 @@ main(int argc, char** argv)
 	int arg_count = 2;
 	argp_parse (&argp, argc, argv, 0, 0, &arg_count);
 
-	if (options.mode < 3)
+	if (options.mode < 2)
 	{
+		printf("testing");
 		switch (options.mode)
 		{
 			case ERROR:
@@ -39,42 +40,12 @@ main(int argc, char** argv)
 	else
 	{
 		FILE* vp;
-		if ((vp = fopen(options.vault, "r+")) == NULL)
-		{
+		if ((vp = fopen(options.vault, "a+")) == NULL)
 			error(CH_EPATH, 0, "could not open path: %s", options.vault);
-		}
-		switch (options.mode)
-		{
-			case WRITE:
-			{
-				// if (ch_write(options.vault, options.entry, options.pass) != 0)
-				// 	error(1, 0, "couldn't write");
-				break;
-			}
-			case READ:
-			{
-				char* pass;
-				if ((pass = ch_read(vp, options.entry)) == NULL)
-				{
-					error(1, 0, "%s: couldnt find entry", options.entry);
-				}
-				if (options.echo == true)
-				{
-					printf("%s\n", pass);
-				}
-				// TODO: copy
-				break;
-			}
-			case DELETE:
-			{
-				// if (ch_read(options.vault, options.entry, options.pass) != 0)
-				// 	error(1, 0, "couldn't delete");
-				break;
-			}
-			default:
-				// unreachable
-				break;
-		}
+		if (options.mode == WRITE && options.pass == NULL)
+			options.pass = random_string(options.length, options.set);
+		ch_file(vp, options);
+
 		fclose(vp);
 	}
 	return 0;

@@ -11,4 +11,4 @@
 #include "opts.h"
 
 char*
-ch_read(FILE* vp, char* entry);
+ch_file(FILE* vp, Options options);
