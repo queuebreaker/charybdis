@@ -22,7 +22,7 @@ Usage: ch [OPTION...] [MODE] [ENTRY]
       --version              Print program version
 ```
 
-[MODE] can be one of four values:
+[MODE] can be one of three values:
 * write (append new entry with the name [ENTRY] to vault)
 * read (extract password associated with [ENTRY] from vault)
 * delete (remove [ENTRY] from vault)
