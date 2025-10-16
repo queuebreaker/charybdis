@@ -10,55 +10,158 @@
 #include "include.h"
 #include "opts.h"
 
-void
-ch_file(FILE* vp, Options options)
+Entry_data ch_find(FILE *vp, const char *entry)
 {
-	switch(options.mode)
+	Entry_data data = { .offset = -1, .size = 0 };
+	bool found = false;
+	long start = 0;
+	long offset = 0;
+	char buffer[257];
+
+	rewind(vp);
+
+	while (fgets(buffer, sizeof buffer, vp) != NULL)
 	{
-		case WRITE:
-		{
-			fprintf(vp, "\n%s\n%s", options.entry, options.pass);
-			printf("success!\n");
+		buffer[strcspn(buffer, "\n")] = '\0';
+
+		if (!found) {
+			if (strcmp(buffer, entry) == 0) {
+			found = true;
+			start = offset;   // remember where the key starts
+			}
+		} else {
+			/* this is the value line that follows the key */
+			data.offset = start;
+			data.size   = (offset + strlen(buffer) + 1) - start;
 			break;
 		}
-		case READ || DELETE:
-		{
-			// TODO: redo everything here, implement delete
-			int i;
-			i = 0;
-			int line;
-			char buffer[257];
-			char* pass = malloc(sizeof(char) * 257);
-			bool is_entry = false;
-			while (fgets(buffer, sizeof(buffer), vp) != NULL)
-			{
-				buffer[strcspn(buffer, "\n")] = 0;
-				if (i % 2 == 0)
-				{
-					if (is_entry)
-					{
-						if (options.mode == WRITE)
-							strcpy(pass, buffer);
-						else if (options.mode == DELETE)
-							printf("not implemented, sorry\n");
-						break;
-					}
-					if (strcmp(buffer, options.entry) == 0)
-					{
-						i++;
-						line = i;
-						is_entry = true;
-					}
-				}
-				i++;
-			}
-			if (options.echo == true)
-			{
-				printf("%s\n", pass);
-			}
-		}
-		default:
-			// unreachable
-			break;
+
+		/* advance offset: length of line + the newline we stripped */
+		offset += strlen(buffer) + 1;
 	}
+
+return data;
+}
+
+// Entry_data
+// ch_find(FILE *vp, const char *entry)
+// {
+// 	Entry_data data = { .offset = -1, .size = 0 };
+// 	int i = 0;
+// 	long offset = 0;
+// 	long start = 0;
+// 	int line = 0;
+// 	bool found = false;
+
+// 	rewind(vp);
+
+// 	char buffer[257];
+// 	while (fgets(buffer, sizeof(buffer), vp) != NULL)
+// 	{
+// 		buffer[strcspn(buffer, "\n")] = '\0';
+// 		printf("%d\t%s\n", i, buffer);
+// 		if(i % 2 == 0)
+// 		{
+// 			if (!found && strcmp(buffer, entry) == 0) {
+// 				found = true;
+// 				start = offset;
+// 			}
+// 		if (found)
+// 			{
+// 				++line;
+// 				if (line == 2)
+// 				{
+// 				data.offset = start;
+// 				data.size  = offset - start;
+// 				break;
+// 				}
+// 			}
+// 		}
+// 		offset += strlen(buffer) + 1;
+// 		i++;
+// 	}
+// 	return data;
+// }
+
+char*
+ch_read(FILE* vp, int size)
+{
+	char buffer[257]  = { 0 };
+
+	size_t fread_size;
+	if ((size_t)size < sizeof(buffer) - 1)
+	{
+		fread_size = (size_t)size;
+	}
+	else
+	{
+		fread_size = sizeof(buffer);
+	}
+
+	fread(buffer, 1, fread_size, vp);
+	buffer[fread_size] = '\0';
+
+	char* pass = strchr(buffer, '\n');
+	if (pass)
+	{
+		*pass = '\0';
+		++pass;
+	}
+
+	char* out = malloc(strlen(pass) + 1);
+	strcpy(out, pass);
+
+	return out;
+}
+
+int
+ch_write(FILE* vp, char* entry, char* pass)
+{
+	if (fprintf(vp, "%s\n%s\n", entry, pass) < 0)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+int
+ch_delete(FILE* vp, int size, char* vault)
+{
+	char tmp_path[4096];
+	char bk_path[4096];
+	snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", vault);
+	snprintf(bk_path, sizeof(bk_path), "%s.bk", vault);
+
+	FILE* tmp = fopen(tmp_path, "wb");
+	if (!tmp)
+	{
+		return -1;
+	}
+
+	char buffer[257];
+	long start = ftell(vp);
+
+	rewind(vp);
+
+	while (ftell(vp) < start)
+	{
+		fgets(buffer, sizeof(buffer), vp);
+		fputs(buffer, tmp);
+	}
+
+	fseek(vp, start + size, SEEK_SET);
+
+	while (fgets(buffer, sizeof(buffer), vp))
+	{
+		fputs(buffer, tmp);
+	}
+
+	fflush(tmp);
+	fclose(tmp);
+
+	rename(vault, bk_path);
+	rename(tmp_path, vault);
+	unlink(bk_path);
+
+	return 0;
 }

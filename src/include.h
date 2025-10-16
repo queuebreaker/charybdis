@@ -6,6 +6,8 @@
 #define CH_EARGC 2	// argc error
 #define CH_EMODE 3	// invalid mode
 #define CH_EPATH 4	// invalid path
+#define CH_EENTRY 5	// invalid entry
+#define CH_EFILE 6	// file error
 
 #define CH_VERSION "0.1"
 
@@ -31,5 +33,11 @@ typedef struct
 	int length;
 	char* pass;
 } Options;
+
+typedef struct
+{
+	long offset;
+	int size;
+} Entry_data;
 
 #endif
