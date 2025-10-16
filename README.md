@@ -1,4 +1,4 @@
-charybdis (ch /cuh/ for short) is a basic password management and generation system for Linux.
+**charybdis** (ch /cuh/ for short) is a basic password management and generation system for Linux.
 
 ## Usage
 
