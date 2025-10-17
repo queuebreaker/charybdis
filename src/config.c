@@ -1,5 +1,4 @@
 #include "include.h"
-#include "include.h"
 
 // TODO
 struct options
