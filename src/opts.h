@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <argp.h>
-#include <unistd.h>
-
 #include "random.h"
 
 #ifndef OPTS_H

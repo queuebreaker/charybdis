@@ -1,6 +1,15 @@
 #ifndef INC_H
 #define INC_H
 
+#include <stdio.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <string.h>
+#include <argp.h>
+#include <stdlib.h>
+#include <error.h>
+#include <sys/time.h>
+
 // custom error exit codes
 #define CH_ERR 1 	// general-purpose
 #define CH_EARGC 2	// argc error
