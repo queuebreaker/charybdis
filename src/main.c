@@ -1,7 +1,5 @@
 // ch - a password generation and management system
 
-
-
 #include "include.h"
 #include "opts.h"
 #include "file.h"

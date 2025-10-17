@@ -1,8 +1,7 @@
 #include "include.h"
+#include "include.h"
 
-
-//TODO
-
+// TODO
 struct options
 {
 

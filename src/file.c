@@ -1,7 +1,8 @@
 #include "include.h"
 #include "opts.h"
 
-Entry_data ch_find(FILE *vp, const char *entry)
+Entry_data
+ch_find(FILE *vp, const char *entry)
 {
 	Entry_data data = { .offset = -1, .size = 0 };
 	bool found = false;
@@ -15,23 +16,20 @@ Entry_data ch_find(FILE *vp, const char *entry)
 	{
 		buffer[strcspn(buffer, "\n")] = '\0';
 
-		if (!found) {
-			if (strcmp(buffer, entry) == 0) {
+		if (!found && strcmp(buffer, entry) == 0)
+		{
 			found = true;
-			start = offset;   // remember where the key starts
-			}
-		} else {
-			/* this is the value line that follows the key */
+			start = offset;
+		}
+		else
+		{
 			data.offset = start;
-			data.size   = (offset + strlen(buffer) + 1) - start;
+			data.size = (offset + strlen(buffer) + 1) - start;
 			break;
 		}
-
-		/* advance offset: length of line + the newline we stripped */
 		offset += strlen(buffer) + 1;
 	}
-
-return data;
+	return data;
 }
 
 // Entry_data
